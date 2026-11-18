@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PaperReader — 논문 읽기 도우미</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="../node_modules/katex/dist/katex.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <!-- Top Tab Bar -->
+    <header id="topbar" class="topbar">
+      <div class="topbar-left">
+        <div class="nav-icon-group">
+          <button id="tab-hub" class="nav-tab active" data-view="home" title="Home" aria-label="Home">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </button>
+          <button id="tab-library" class="nav-tab" data-view="library" title="Library" aria-label="Library">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </button>
+        </div>
+        <div id="open-paper-tabs" class="open-paper-tabs" aria-label="Open Papers"></div>
+      </div>
+
+      <div class="topbar-right">
+        <button id="btn-open-settings" class="icon-btn" title="API 키 및 앱 설정">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+
+        <button id="btn-snow-toggle" class="icon-btn snow-toggle-btn" title="배경 눈 내리기 모드 (홈 · 라이브러리)" aria-label="눈 모드 전환">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/><polyline points="9 5 12 2 15 5"/><polyline points="9 19 12 22 15 19"/><polyline points="5 9 2 12 5 15"/><polyline points="19 9 22 12 19 15"/></svg>
+        </button>
+
+        <button id="btn-theme-toggle" class="theme-toggle-pill" title="라이트 / 다크 / 코스믹 모드 전환" aria-label="테마 모드 전환">
+          <span class="theme-stars" aria-hidden="true"></span>
+          <span class="theme-icon sun-icon" aria-hidden="true">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </span>
+          <span class="theme-icon moon-icon" aria-hidden="true">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
+          <span class="theme-icon cosmic-icon" aria-hidden="true">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg>
+          </span>
+          <span class="theme-switch-thumb" aria-hidden="true"></span>
+        </button>
+
+        <span class="toolbar-sep"></span>
+
+        <div class="window-controls">
+          <button id="btn-win-min" class="win-btn" title="최소화" aria-label="최소화">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <button id="btn-win-max" class="win-btn" title="최대화 / 복원" aria-label="최대화">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+          </button>
+          <button id="btn-win-close" class="win-btn win-close" title="닫기" aria-label="닫기">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main View Container -->
+    <main class="main-container">
+      <canvas id="cosmos-canvas" class="cosmos-canvas hidden" aria-hidden="true"></canvas>
+      <canvas id="snow-canvas" class="snow-canvas hidden" aria-hidden="true"></canvas>
+      <!-- Global Window Drop Overlay -->
+      <div id="global-drop-overlay" class="global-drop-overlay hidden">
+        <div class="global-drop-card">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+          <span>창 아무 곳에나 놓아 PDF 열기</span>
+        </div>
+      </div>
+
+      <!-- ① HOME VIEW (Large Upload Zone + Recent Opened List) -->
+      <section id="view-home" class="view active">
+        <div class="home-inner">
+          <div class="home-first-screen">
+            <div id="home-dropzone" class="dropzone dropzone-hero" tabindex="0" role="button" aria-label="PDF 업로드">
+            <div class="dropzone-icon">
+              <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+            </div>
+            <p class="dropzone-title">Drop PDF anywhere, or click to browse</p>
+            <p class="dropzone-sub">창 어디에나 PDF 파일을 끌어다 놓으면 자동으로 열리고 Antigravity가 번역·요약을 시작합니다</p>
+
+            <div class="url-import-bar" id="url-import-bar">
+              <input
+                id="input-arxiv-url"
+                type="text"
+                class="url-input"
+                placeholder="arXiv 링크 또는 ID 붙여넣기 (예: https://arxiv.org/abs/2308.04079)"
+              />
+              <button id="btn-import-url" class="btn-accent" type="button">불러오기</button>
+            </div>
+          </div>
+
+          <div class="section-header">
+            <h2 class="section-title">Recent Papers</h2>
+          </div>
+
+          <div id="recent-list" class="recent-list"></div>
+
+          <div class="knowledge-orb-dock">
+            <button id="btn-knowledge-orb" class="knowledge-orb-btn" type="button" title="논문 지식 그래프 보기">
+              <span class="knowledge-orb-ring" aria-hidden="true">
+                <svg class="knowledge-orb-svg" width="54" height="54" viewBox="0 0 64 64" fill="none">
+                  <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-opacity="0.22" stroke-width="1.2" stroke-dasharray="3 3"/>
+                  <ellipse cx="32" cy="32" rx="28" ry="12" stroke="currentColor" stroke-opacity="0.24" stroke-width="1"/>
+                  <ellipse cx="32" cy="32" rx="12" ry="28" stroke="currentColor" stroke-opacity="0.24" stroke-width="1"/>
+                  <g class="orb-edges" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.2">
+                    <line x1="20" y1="20" x2="44" y2="24"/>
+                    <line x1="44" y1="24" x2="34" y2="45"/>
+                    <line x1="34" y1="45" x2="18" y2="37"/>
+                    <line x1="18" y1="37" x2="20" y2="20"/>
+                    <line x1="20" y1="20" x2="34" y2="45"/>
+                    <line x1="32" y1="14" x2="44" y2="24"/>
+                    <line x1="32" y1="14" x2="20" y2="20"/>
+                  </g>
+                  <circle class="orb-node" cx="20" cy="20" r="3.2" fill="currentColor"/>
+                  <circle class="orb-node" cx="44" cy="24" r="3.6" fill="currentColor"/>
+                  <circle class="orb-node" cx="34" cy="45" r="3.2" fill="currentColor"/>
+                  <circle class="orb-node" cx="18" cy="37" r="2.6" fill="currentColor" fill-opacity="0.8"/>
+                  <circle class="orb-node" cx="32" cy="14" r="2.6" fill="currentColor" fill-opacity="0.8"/>
+                </svg>
+              </span>
+              <svg class="knowledge-orb-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          </div>
+
+          <section id="home-knowledge-section" class="knowledge-section" aria-label="Paper Knowledge Graph">
+            <div class="knowledge-section-head">
+              <div>
+                <h2 class="section-title">Paper Knowledge Graph</h2>
+                <p class="knowledge-section-sub">등록된 논문과 공통 개념·태그 관계를 한눈에 탐색하고 클릭해 바로 열어보세요</p>
+              </div>
+              <div class="knowledge-head-actions">
+                <button id="btn-kg-relayout" class="btn-ghost-sm" type="button" title="그래프 재배치">재배치</button>
+                <button id="btn-kg-top" class="btn-ghost-sm" type="button" title="맨 위로">↑ 위로</button>
+              </div>
+            </div>
+            <div class="knowledge-canvas-wrap">
+              <canvas id="knowledge-graph-canvas" class="knowledge-graph-canvas"></canvas>
+              <div id="kg-tooltip" class="kg-tooltip hidden"></div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ② LIBRARY VIEW -->
+      <section id="view-library" class="view">
+        <div class="hub-inner">
+          <div class="library-search-wrap">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input
+              id="library-search-input"
+              type="text"
+              class="library-search-input"
+              placeholder="Search titles, tags, highlights, comments, or translated text..."
+            />
+            <button id="btn-clear-search" class="icon-btn-sm hidden" title="검색어 지우기">✕</button>
+          </div>
+
+          <div class="library-controls-row">
+            <div class="filter-pills" id="library-status-filters">
+              <button class="filter-pill active" data-status="all">All</button>
+              <button class="filter-pill" data-status="unread">Unread</button>
+              <button class="filter-pill" data-status="reading">Reading</button>
+              <button class="filter-pill" data-status="done">Done</button>
+            </div>
+
+            <div class="library-right-controls">
+              <button type="button" id="library-view-toggle" class="lib-icon-switch" data-mode="detailed" title="간단히 보기 / 상세 보기 전환" aria-label="간단히 보기 / 상세 보기 전환">
+                <span class="lib-switch-thumb" aria-hidden="true"></span>
+                <span class="lib-switch-icon" data-side="compact" title="간단히 보기">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                </span>
+                <span class="lib-switch-icon" data-side="detailed" title="상세 보기">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                </span>
+              </button>
+              <div class="sort-dropdown" id="library-sort-dropdown">
+                <button type="button" id="library-sort-btn" class="sort-select-btn" aria-haspopup="listbox" aria-expanded="false" title="정렬 기준">
+                  <span id="library-sort-label">추가일순</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div id="library-sort-menu" class="sort-select-menu hidden" role="listbox">
+                  <button type="button" class="sort-option active" data-sort="added">추가일순</button>
+                  <button type="button" class="sort-option" data-sort="recent">최근 열람순</button>
+                  <button type="button" class="sort-option" data-sort="year">논문 년도순</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="library-list" class="library-grid"></div>
+        </div>
+        <button id="btn-library-notion" class="lib-notion-fab" type="button" title="Notion · Paper Reviews 페이지 열기" aria-label="Notion Paper Reviews 열기">
+          <img src="../assets/notion.png" alt="Notion" class="lib-notion-icon" />
+        </button>
+      </section>
+
+      <!-- ② READER VIEW (3-Column Split View) -->
+      <section id="view-reader" class="view view-reader">
+        <div id="reader-empty-state" class="reader-empty-state">
+          <p>아직 열린 논문이 없습니다.</p>
+          <button id="btn-go-home-from-reader" class="btn-accent">Home에서 논문 선택하기</button>
+        </div>
+
+        <div id="reader-subbar" class="reader-subbar hidden">
+          <div class="reader-subbar-left">
+            <button id="btn-toggle-pdf" class="icon-btn active" title="왼쪽 PDF 패널 열기/닫기" aria-label="PDF 패널 토글">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+            </button>
+            <span id="reader-paper-title" class="reader-paper-title" title="">논문을 선택하세요</span>
+
+            <div class="page-stepper">
+              <button id="btn-prev-page" class="icon-btn-sm" title="이전 페이지 (←)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <input id="input-current-page" type="number" min="1" value="1" class="page-input" aria-label="Current page" />
+              <span class="page-total">/ <span id="span-total-pages">1</span></span>
+              <button id="btn-next-page" class="icon-btn-sm" title="다음 페이지 (→)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+
+            <button id="btn-sync-toggle" class="pill-toggle active" title="원문 · 번역본 스크롤 동기화">
+              <span class="sync-dot"></span>
+              <span>Sync ON</span>
+            </button>
+          </div>
+
+          <div class="reader-subbar-right">
+            <button id="btn-bookmark-page" class="icon-btn" title="현재 페이지 북마크 (Ctrl+D)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </button>
+
+            <button id="btn-mark-done" class="btn-mark-done" title="완독 상태 전환">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span id="mark-done-label">Mark Done</span>
+            </button>
+
+            <button id="btn-export-md" class="btn-ghost-sm" title="번역+형광펜+요약 마크다운(.md) 내보내기">MD</button>
+            <button id="btn-toggle-sidebar" class="icon-btn" title="사이드바 열기/닫기">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div id="reader-workspace" class="reader-workspace hidden">
+          <!-- Left Panel: PDF Original -->
+          <div id="reader-left-panel" class="reader-panel reader-left-panel">
+            <div class="pdf-scroll-container" id="pdf-scroll-container">
+              <div class="pdf-pages-stack" id="pdf-pages-stack"></div>
+            </div>
+
+            <div class="pdf-floating-controls">
+              <button id="btn-zoom-out" class="pdf-ctrl-btn" title="축소">-</button>
+              <span id="zoom-label" class="pdf-zoom-label">Fit</span>
+              <button id="btn-zoom-in" class="pdf-ctrl-btn" title="확대">+</button>
+              <button id="btn-zoom-fit" class="pdf-ctrl-btn" title="패널 너비 맞춤">Fit</button>
+              <span class="pdf-ctrl-sep"></span>
+              <button id="btn-pdf-filter" class="pdf-ctrl-btn" title="다크 모드 PDF 눈부심 완화 필터 전환">눈부심: 원본</button>
+            </div>
+          </div>
+
+          <!-- Center Resizer -->
+          <div id="split-resizer" class="split-resizer" title="드래그하여 좌우 폭 조절">
+            <div class="resizer-grip"></div>
+          </div>
+
+          <!-- Middle Panel: Translation | Summary -->
+          <div id="reader-middle-panel" class="reader-panel reader-middle-panel">
+            <div class="middle-panel-header">
+              <div class="segmented-md" id="middle-mode-toggle">
+                <button class="seg-btn active" data-mode="translation">Translation</button>
+                <button class="seg-btn" data-mode="summary">Summary</button>
+              </div>
+            </div>
+
+            <div id="translation-pane" class="middle-scroll-pane">
+              <div id="translation-blocks-container" class="translation-blocks-container"></div>
+            </div>
+
+            <div id="summary-pane" class="middle-scroll-pane hidden">
+              <div id="summary-content" class="summary-markdown-body"></div>
+            </div>
+          </div>
+
+          <!-- Right Collapsible Sidebar -->
+          <aside id="reader-sidebar" class="reader-sidebar collapsed">
+            <div class="sidebar-tabs" id="sidebar-tabs">
+              <button class="sidebar-tab" data-tab="contents">Contents <span class="tab-count" id="count-contents">0</span></button>
+              <button class="sidebar-tab" data-tab="bookmarks">Bookmarks <span class="tab-count" id="count-bookmarks">0</span></button>
+              <button class="sidebar-tab" data-tab="highlights">Highlights <span class="tab-count" id="count-highlights">0</span></button>
+              <button class="sidebar-tab active" data-tab="notes">Notes <span class="tab-count" id="count-notes">0</span></button>
+            </div>
+
+            <div class="sidebar-action-bar" id="sidebar-action-bar">
+              <button id="btn-copy-all-open-prompts" class="btn-ghost-xs full-width hidden">미해결 질문 전체 AI 복사</button>
+              <button id="btn-add-page-note" class="btn-ghost-xs full-width">+ 현재 페이지 질문/메모 추가</button>
+            </div>
+
+            <div id="sidebar-list" class="sidebar-list"></div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Selection Floating Toolbar (Highlighter + Comment) -->
+  <div id="selection-toolbar" class="floating-toolbar hidden" role="toolbar">
+    <button class="hl-swatch swatch-amber" data-color="amber" title="노랑 형광펜"></button>
+    <button class="hl-swatch swatch-green" data-color="green" title="초록 형광펜"></button>
+    <button class="hl-swatch swatch-rose" data-color="rose" title="분홍 형광펜"></button>
+    <button class="hl-swatch swatch-accent" data-color="accent" title="테라코타 형광펜"></button>
+    <span class="toolbar-vsep"></span>
+    <button id="btn-sel-note" class="floating-btn">메모</button>
+    <button id="btn-sel-question" class="floating-btn accent">댓글/질문</button>
+  </div>
+
+  <!-- Equation Right-Click Context Menu -->
+  <div id="math-context-menu" class="context-menu hidden" role="menu">
+    <button class="ctx-item" data-action="copy-latex">LaTeX 복사 ($$...$$)</button>
+    <button class="ctx-item" data-action="copy-pure">순수 수식만 복사</button>
+    <button class="ctx-item" data-action="copy-ai">수식 설명 질문 복사</button>
+  </div>
+
+  <!-- Note / Question Input Modal -->
+  <div id="note-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="note-modal-title">질문 / 메모 작성</h3>
+        <button class="icon-btn-sm modal-close" data-close="note-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="note-modal-excerpt" class="modal-excerpt hidden"></div>
+        <div id="note-modal-color-row" class="modal-color-row hidden">
+          <span>형광펜 색상:</span>
+          <button class="hl-swatch swatch-amber active" data-color="amber"></button>
+          <button class="hl-swatch swatch-green" data-color="green"></button>
+          <button class="hl-swatch swatch-rose" data-color="rose"></button>
+          <button class="hl-swatch swatch-accent" data-color="accent"></button>
+        </div>
+        <textarea id="note-modal-textarea" class="modal-textarea" rows="4" placeholder="궁금한 점이나 한 줄 메모를 입력하세요..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost-sm modal-close" data-close="note-modal">취소</button>
+        <button id="btn-save-note-modal" class="btn-accent">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Paper Metadata Modal -->
+  <div id="meta-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>논문 메타데이터 & 태그 수정</h3>
+        <button class="icon-btn-sm modal-close" data-close="meta-modal">✕</button>
+      </div>
+      <div class="modal-body form-stack">
+        <label class="form-field">
+          <span>논문 제목</span>
+          <input id="meta-input-title" type="text" class="form-input" />
+        </label>
+        <label class="form-field">
+          <span>분야/주제 태그 (쉼표로 구분, 예: #3DGS, #Optics)</span>
+          <input id="meta-input-tags" type="text" class="form-input" />
+        </label>
+        <label class="form-field">
+          <span>초간단 1줄 요약 (20자 내외)</span>
+          <input id="meta-input-summary" type="text" class="form-input" />
+        </label>
+        <label class="form-field">
+          <span>내 한 줄 총평 (Review)</span>
+          <textarea id="meta-input-review" rows="2" class="modal-textarea"></textarea>
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost-sm modal-close" data-close="meta-modal">취소</button>
+        <button id="btn-save-meta-modal" class="btn-accent">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>앱 설정</h3>
+        <button class="icon-btn-sm modal-close" data-close="settings-modal">✕</button>
+      </div>
+      <div class="modal-body form-stack">
+        <label class="form-field">
+          <span>다크 모드 PDF 원문 필터</span>
+          <select id="settings-pdf-filter" class="form-input">
+            <option value="none">원본 그대로 (White Paper)</option>
+            <option value="dim">은은한 눈부심 완화 (Warm Dim)</option>
+            <option value="sepia">세피아 톤 (Warm Sepia)</option>
+            <option value="invert">다크 반전 (Dark Invert)</option>
+          </select>
+        </label>
+        <div class="form-note" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <span>로컬 캐시 폴더: <code id="settings-data-root"></code></span>
+          <button id="btn-open-data-dir" class="btn-ghost-xs" type="button" style="flex-shrink:0;">폴더 열기</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost-sm modal-close" data-close="settings-modal">닫기</button>
+        <button id="btn-save-settings" class="btn-accent">설정 저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attachments (Notion / Web Link / Local File) Modal -->
+  <div id="attachments-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="att-modal-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;color:var(--accent)"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>관련 자료 &amp; 링크 연결</h3>
+        <button class="icon-btn-sm modal-close" data-close="attachments-modal">✕</button>
+      </div>
+      <div class="modal-body form-stack">
+        <div id="att-dropzone" class="att-dropzone" tabindex="0" role="button">
+          <span>여기에 파일을 끌어다 놓거나 클릭하여 추가</span>
+          <small class="muted-text">탐색기 파일 · Archive-Hub 고정 파일/링크 지원</small>
+        </div>
+
+        <div class="att-url-form">
+          <input id="att-input-title" type="text" class="form-input" placeholder="표시 이름 (선택, 예: 노션 정리 / GitHub)" />
+          <div style="display:flex;gap:8px;">
+            <input id="att-input-url" type="text" class="form-input" placeholder="노션 링크(notion:// / https://...) 또는 인터넷 URL" />
+            <button id="btn-add-att-url" class="btn-accent" style="flex-shrink:0;">추가</button>
+          </div>
+        </div>
+
+        <div id="att-list" class="att-list"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost-sm modal-close" data-close="attachments-modal">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Paper Confirmation Modal -->
+  <div id="delete-confirm-modal" class="modal-backdrop hidden">
+    <div class="modal-card" style="max-width:420px;">
+      <div class="modal-header">
+        <h3>논문 삭제 확인</h3>
+        <button class="icon-btn-sm modal-close" data-close="delete-confirm-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="delete-confirm-msg" style="margin:0 0 8px;font-size:13.5px;line-height:1.55;color:var(--text-primary);"></p>
+        <p style="margin:0;font-size:12px;color:var(--text-secondary);">저장된 번역본, 형광펜, 북마크, 질문 및 연결된 자료 정보가 함께 삭제됩니다.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost-sm modal-close" data-close="delete-confirm-modal">취소</button>
+        <button id="btn-confirm-delete-paper" class="btn-danger">삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="../node_modules/pdfjs-dist/build/pdf.min.js"></script>
+  <script src="../node_modules/marked/marked.min.js"></script>
+  <script src="../node_modules/katex/dist/katex.min.js"></script>
+  <script src="pdf-blocks.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
